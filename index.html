@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地震學第四章：震源機制與波動理論深度教材</title>
+    <style>
+        :root {
+            --deep-blue: #1e3a8a;
+            --light-blue: #bfdbfe;
+            --slate: #475569;
+            --bg: #f8fafc;
+            --accent: #2563eb;
+            --success: #059669;
+            --error: #dc2626;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--slate); padding: 20px; line-height: 1.6; }
+        .container { max-width: 950px; margin: auto; }
+        header { text-align: center; padding: 40px; background: var(--deep-blue); color: white; border-radius: 12px; margin-bottom: 30px; }
+        .topic-card { background: white; padding: 30px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-left: 8px solid var(--accent); }
+        h2 { color: var(--deep-blue); margin-top: 0; }
+        .explanation { background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 0.95rem; }
+        .quiz { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+        .option { display: block; width: 100%; margin: 8px 0; padding: 12px; background: #fff; border: 1px solid #cbd5e0; border-radius: 5px; cursor: pointer; transition: 0.2s; text-align: left; }
+        .option:hover { background: var(--light-blue); border-color: var(--accent); }
+        .feedback { margin-top: 10px; font-weight: bold; padding: 10px; border-radius: 5px; display: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>地震學第四章：震源機制與波動理論</h1>
+        <p>深入探索地震發生之物理過程與觀測方法</p>
+    </header>
+
+    <div id="app"></div>
+</div>
+
+<script>
+const chapters = [
+    { title: "1. 彈性回跳理論 (Elastic Rebound)", desc: "地震並非單純的斷裂，而是應力累積與釋放的過程。當斷層兩側因摩擦力『鎖定 (Locked)』，岩石在受力下產生彈性形變，儲存應變能。一旦應力超過斷層摩擦阻力，斷層發生滑移，釋放累積的彈性位能。", quiz: "在彈性回跳理論中，斷層鎖定期間累積的是什麼能量？", options: ["熱能", "彈性位能", "重力位能"], ans: 1 },
+    { title: "2. 地震週期 (Seismic Cycle)", desc: "地震週期描述了斷層活動的循環過程：間期 (Interseismic) 的應變累積、前期 (Preseismic) 的應力擾動、同震期 (Coseismic) 的滑移釋放、以及後期 (Postseismic) 的粘彈性調整。", quiz: "何者不是地震週期的階段？", options: ["同震期", "間期", "隨機期"], ans: 2 },
+    { title: "3. 斷層幾何 (Fault Geometry)", desc: "利用 Strike (走向)、Dip (傾角)、Slip Angle (滑移角) 來唯一定義斷層。這些參數決定了斷層的運動學模式（正斷層、逆斷層、平移斷層）。", quiz: "如果斷層為純逆斷層，滑移角應為多少？", options: ["0 度", "90 度", "180 度"], ans: 1 },
+    { title: "4. P波初動與輻射圖型", desc: "基於雙力偶 (Double Couple) 模型，P波在輻射時會形成四葉草型的振幅分布。測站位於壓縮區記錄到向上 (Up)，位於擴張區記錄到向下 (Down)。", quiz: "雙力偶模型的輻射圖形主要由什麼產生？", options: ["震源的剪切滑移", "地底的體積爆炸", "熱脹冷縮"], ans: 0 },
+    { title: "5. 立體投影與沙灘球", desc: "將 3D 的震源球投影到 2D 平面，節面 (Nodal Plane) 是將壓縮與擴張區分開的平面。沙灘球的黑白分布即反映了斷層運動機制。", quiz: "沙灘球的節面代表什麼意義？", options: ["P波極性為零的平面", "斷層的破裂速度", "地殼密度"], ans: 0 },
+    { title: "6. 波形模擬與合成地震圖", desc: "這是地震學的反問題：合成波形 = 震源 (Source) * 傳播路徑 (Green's function) * 儀器響應。此方法用於精確化地殼速度結構模型。", quiz: "合成地震圖的主要數學工具為何？", options: ["卷積 (Convolution)", "微分", "積分"], ans: 0 },
+    { title: "7. 震源時間函數與指向性", desc: "斷層破裂是動態過程。當破裂傳播方向與觀測測站一致時，由於多普勒效應，觀測到的波形會發生時間壓縮與振幅放大，即為指向性效應。", quiz: "指向性效應對波形的影響為何？", options: ["持續時間變長", "持續時間變短且振幅放大", "完全無影響"], ans: 1 },
+    { title: "8. 震矩張量 (Moment Tensor)", desc: "震矩張量矩陣能描述不僅限於雙力偶的震源。可用於描述火山噴發或塌陷等具有體積變化成分的地震。", quiz: "震矩張量的主要優勢為何？", options: ["計算簡單", "能描述複雜的震源機制（包含體積變化）", "只能計算正斷層"], ans: 1 },
+    { title: "9. 地震大地測量", desc: "利用 GPS 與 InSAR 測量地震後的靜態地表位移場。這些數據能反演斷層在深部的滑移分布，是地震學與大地測量的跨領域應用。", quiz: "地震大地測量主要觀測什麼？", options: ["地表瞬時震動", "地表靜態位移場", "地下岩漿密度"], ans: 1 },
+    { title: "10. 規模與震矩 (Moment Magnitude)", desc: "芮氏規模 (M_L) 測量振幅會飽和。震矩規模 (M_w) 基於地震矩 M_0 = μAD (模數 * 面積 * 滑移量)，反映真實能量。", quiz: "震矩規模 M_w 的優點為何？", options: ["計算快速", "物理基礎紮實，不會隨規模大小而飽和", "測量儀器較便宜"], ans: 1 },
+    { title: "11. 地震統計 (Gutenberg-Richter Law)", desc: "log N = a - bM。此定律揭示了地震的碎形特徵。b-值通常接近 1，代表小地震頻率呈指數遞減。", quiz: "若 b 值異常降低，意味著什麼？", options: ["地震變少了", "大地震比例上升，可能暗示應力集中", "岩石變得更軟了"], ans: 1 }
+];
+
+const app = document.getElementById('app');
+chapters.forEach((ch, idx) => {
+    app.innerHTML += `
+        <div class="topic-card">
+            <h2>${ch.title}</h2>
+            <div class="explanation">${ch.desc}</div>
+            <div class="quiz">
+                <p><strong>挑戰：${ch.quiz}</strong></p>
+                ${ch.options.map((opt, i) => `<button class="option" onclick="check(${idx}, ${i}, this)">${opt}</button>`).join('')}
+                <div id="res-${idx}" class="feedback"></div>
+            </div>
+        </div>
+    `;
+});
+
+function check(idx, userAns, btn) {
+    const res = document.getElementById('res-' + idx);
+    res.style.display = 'block';
+    if(userAns === chapters[idx].ans) {
+        res.innerHTML = "✅ 正確！此概念您已掌握。";
+        res.style.color = "var(--success)";
+        res.style.background = "#d1fae5";
+    } else {
+        res.innerHTML = "❌ 不正確。建議回顧一下該章節的物理定義。";
+        res.style.color = "var(--error)";
+        res.style.background = "#fee2e2";
+    }
+}
+</script>
+</body>
+</html>
